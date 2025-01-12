@@ -11,4 +11,4 @@ const createEmptyBoard = () => {
   return board;
 };
 
-module.exports = createEmptyBoard;
+module.exports = { createEmptyBoard };

@@ -1,20 +1,25 @@
-const createEmptyBoard = require("./createBoard");
-const placeShip = require("./placeShip");
+const { createEmptyBoard } = require("./createBoard");
+const { placeShip } = require("./placeShip");
 
-const generateShipLocations = (board) => {
+const startNewGame = () => {
+  const board = createEmptyBoard();
   const ships = [1, 1, 1, 2, 2, 2, 3, 3, 4, 5];
 
   ships.forEach((shipSize) => {
     placeShip(board, shipSize);
   });
+  return board
 };
 
-// Board display (for testing, need to remove later on)
-const displayBoard = (board) => {
-  console.log(board.map((row) => row.join(" ")).join("\n"));
+// Simple test handler for hits (optional)
+const hitShip = (board, row, col) => {
+  if (board[row][col] === "ship") {
+    board[row][col] = "hit";
+    return "hit";
+  } else {
+    board[row][col] = "miss";
+    return "miss";
+  }
 };
 
-// Game initialization
-const board = createEmptyBoard();
-generateShipLocations(board);
-displayBoard(board);
+module.exports = { startNewGame, hitShip };

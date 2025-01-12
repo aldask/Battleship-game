@@ -46,4 +46,4 @@ const placeShip = (board, shipSize) => {
   }
 };
 
-module.exports = placeShip;
+module.exports = { placeShip };
