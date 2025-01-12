@@ -1,5 +1,5 @@
 const express = require("express");
-const game = require("./gameLogic");
+const game = require("./game/gameLogic");
 
 const app = express();
 const port = 3001;
