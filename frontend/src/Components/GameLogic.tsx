@@ -31,6 +31,9 @@ const useGameLogic = () => {
       setMessage("Game over! Press the button to start a new game.");
       return;
     }
+    if (board[row][col] === "hit" || board[row][col] === "miss") {
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:3001/hit", {
