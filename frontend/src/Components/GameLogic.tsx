@@ -4,6 +4,7 @@ const useGameLogic = () => {
   const [board, setBoard] = useState<string[][]>([]);
   const [remainingHits, setRemainingHits] = useState(0);
   const [message, setMessage] = useState("");
+  const [gameOver, setGameOver] = useState(false);
 
   const startNewGame = async () => {
     try {
@@ -18,6 +19,7 @@ const useGameLogic = () => {
 
       setBoard(data.board);
       setRemainingHits(25);
+      setGameOver(false);
       setMessage("New game started! You have 25 hits remaining.");
     } catch (error) {
       setMessage("Error starting a new game. Please try again.");
@@ -25,6 +27,11 @@ const useGameLogic = () => {
   };
 
   const handleHitCell = async (row: number, col: number) => {
+    if (remainingHits === 0) {
+      setMessage("Game over! Press the button to start a new game.");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:3001/hit", {
         method: "POST",
@@ -46,11 +53,17 @@ const useGameLogic = () => {
         return newBoard;
       });
 
-      setRemainingHits(data.remainingShots);
       setMessage(data.result === "hit" ? "Hit!" : "Miss!");
 
-      if (data.remainingHits === 0) {
-        setMessage("Game over! Press the button to start a new game.");
+      if (data.result === "miss") {
+        setRemainingHits((prevHits) => {
+          const updatedHits = prevHits - 1;
+          if (updatedHits <= 0) {
+            setGameOver(true);
+            setMessage("Game over! Please start a new game.");
+          }
+          return updatedHits;
+        });
       }
     } catch (error) {
       setMessage("Error hitting the cell. Please try again.");
