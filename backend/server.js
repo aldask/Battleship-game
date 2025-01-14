@@ -18,7 +18,6 @@ app.post("/newGame", (req, res) => {
 
     const responseData = {
       board: gameState.board,
-      hits: gameState.remainingHits,
     };
 
     res.status(200).json(responseData);
@@ -30,22 +29,33 @@ app.post("/newGame", (req, res) => {
 
 app.post("/hit", (req, res) => {
   console.log("Hit received");
+
   try {
-    if (!gameState) {
+    if (!gameState || !gameState.board) {
       return res.status(400).send("No game in progress");
     }
 
     const { row, col } = req.body;
-    console.log(`Attempt to hit at row ${row} and col ${col}`);
 
-    const result = hitShip(gameState, row, col);
+    if (
+      typeof row !== "number" ||
+      typeof col !== "number" ||
+      row < 0 ||
+      col < 0 ||
+      row >= gameState.board.length ||
+      col >= gameState.board[0].length
+    ) {
+      return res.status(400).send("Invalid row or column");
+    }
+
+    const result = hitShip(gameState.board, row, col);
+
     console.log(`Result: ${result}`);
     console.log("Updated game state after hit:", gameState);
 
     const responseData = {
       board: gameState.board,
       result,
-      remainingHits: gameState.remainingHits,
     };
 
     res.status(200).json(responseData);
