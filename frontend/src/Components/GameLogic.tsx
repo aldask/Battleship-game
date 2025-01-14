@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const useGameLogic = () => {
   const [board, setBoard] = useState<string[][]>([]);
   const [remainingHits, setRemainingHits] = useState(0);
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState("");
 
   const startNewGame = async () => {
     try {
@@ -17,7 +17,8 @@ const useGameLogic = () => {
       const data = await response.json();
 
       setBoard(data.board);
-      setMessage("New game started!");
+      setRemainingHits(25);
+      setMessage("New game started! You have 25 hits remaining.");
     } catch (error) {
       setMessage("Error starting a new game. Please try again.");
     }
@@ -45,10 +46,10 @@ const useGameLogic = () => {
         return newBoard;
       });
 
-      setRemainingHits(data.hits);
+      setRemainingHits(data.remainingShots);
       setMessage(data.result === "hit" ? "Hit!" : "Miss!");
 
-      if (data.hits === 0) {
+      if (data.remainingHits === 0) {
         setMessage("Game over! Press the button to start a new game.");
       }
     } catch (error) {
