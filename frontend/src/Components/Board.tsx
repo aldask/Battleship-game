@@ -22,7 +22,11 @@ const Board: React.FC<BoardProps> = ({ board, onCellClick }) => {
                       ? "bg-blue-500"
                       : "bg-gray-200"
                   }`}
-                  onClick={() => onCellClick(rowIndex, colIndex)}
+                  onClick={() => {
+                    if (cell !== "" && cell !== "hit") {
+                      onCellClick(rowIndex, colIndex);
+                    }
+                  }}
                 >
                   {cell === "hit" ? "X" : cell === "miss" ? "O" : ""}
                 </td>
