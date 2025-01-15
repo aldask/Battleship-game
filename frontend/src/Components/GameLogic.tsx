@@ -61,9 +61,9 @@ const useGameLogic = () => {
       if (data.result === "miss") {
         setRemainingHits((prevHits) => {
           const updatedHits = prevHits - 1;
-          if (updatedHits <= 0) {
+          if (updatedHits === 0) {
             setGameOver(true);
-            setMessage("Game over! Please start a new game.");
+            setMessage("Game over! Press the button to start a new game.");
           }
           return updatedHits;
         });
