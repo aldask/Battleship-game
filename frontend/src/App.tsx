@@ -1,13 +1,24 @@
 import React from "react";
-import Header from "./Components/Header";
 import Board from "./Components/Board";
+import useGameLogic from "./Components/GameLogic";
 
-function App() {
+const App: React.FC = () => {
+  const { board, remainingHits, message, startNewGame, handleHitCell } = useGameLogic();
+
+  // handler for debugging if button presses are working
+  const handleCellClick = (row: number, col: number) => {
+    console.log(`Cell clicked: Row ${row}, Col ${col}`);
+  };
+
   return (
-    <>
-      <h1>battleship game</h1>
-    </>
+    <div className="flex flex-col items-center bg-blue-100 min-h-screen p-4">
+      {message && <div className="mt-4 text-red-500">{message}</div>}
+      <div className="mt-4">
+        <Board board={board} onCellClick={handleHitCell} />
+      </div>
+      <button onClick={startNewGame}>Start New Game</button>
+    </div>
   );
-}
+};
 
 export default App;
