@@ -35,7 +35,7 @@ const Board: React.FC<BoardProps> = ({ board, onCellClick }) => {
                   {cell === "hit" ? (
                     <SiFireship className="w-8 h-8 text-white animate-pulse" />
                   ) : cell === "miss" ? (
-                    <FiCircle className="w-8 h-8 text-white animate-pulse" />
+                    <FiCircle className="w-8 h-8 text-white" />
                   ) : (
                     ""
                   )}
