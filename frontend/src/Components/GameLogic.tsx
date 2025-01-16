@@ -85,7 +85,18 @@ const useGameLogic = () => {
 
       if (data.gameWon) {
         setGameOver(true);
-        setMessage("You won! All ships are sunk!");
+        if (data.totalShipCells === data.sunkShipCells) {
+          if (data.remainingShots === data.initialShots) {
+            setMessage("You won! All ships sunk without wasting any shots.");
+          } else {
+            setMessage("You lost! All ships sunk, but you wasted some shots.");
+          }
+        }
+        if (gameOver) {
+          setMessage(
+            "You lost! You didn't sink all ships, and you're out of shots."
+          );
+        }
       }
     } catch (error) {
       setMessage("Error hitting the cell. Please try again.");
