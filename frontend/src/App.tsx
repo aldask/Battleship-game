@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "animate.css";
 import Board from "./Components/Board";
 import useGameLogic from "./Components/GameLogic";
@@ -6,6 +6,10 @@ import useGameLogic from "./Components/GameLogic";
 const App: React.FC = () => {
   const { board, remainingHits, message, startNewGame, handleHitCell } =
     useGameLogic();
+
+  useEffect(() => {
+    startNewGame();
+  }, []);
 
   return (
     <div className="flex flex-col items-center bg-gradient-to-br from-blue-800 via-indigo-900 to-purple-800 min-h-screen p-4 sm:p-6">
