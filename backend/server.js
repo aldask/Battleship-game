@@ -8,16 +8,24 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
-let gameState = null;
+let gameStates = {};
 
 app.post("/newGame", (req, res) => {
   console.log("New game request received");
+
   try {
-    gameState = startNewGame();
-    console.log("Game state:", gameState);
+    const sessionId = Math.random().toString(36).substr(1, 9);
+    const gameState = startNewGame();
+    gameStates[sessionId] = gameState;
 
     const responseData = {
       board: gameState.board,
+      remainingShots: gameState.remainingShots,
+      missedShots: gameState.missedShots,
+      gameWon: gameState.gameWon,
+      totalShipCells: gameState.totalShipCells,
+      sunkShipCells: gameState.sunkShipCells,
+      sessionId: sessionId,
     };
 
     res.status(200).json(responseData);
@@ -31,11 +39,15 @@ app.post("/hit", (req, res) => {
   console.log("Hit received");
 
   try {
-    if (!gameState || !gameState.board) {
-      return res.status(400).send("No game in progress");
+    const { sessionId, row, col } = req.body;
+
+    if (!sessionId || !gameStates[sessionId]) {
+      return res
+        .status(400)
+        .send("Invalid sessionId. No game in progress for this session.");
     }
 
-    const { row, col } = req.body;
+    const gameState = gameStates[sessionId];
 
     if (
       typeof row !== "number" ||
@@ -48,7 +60,7 @@ app.post("/hit", (req, res) => {
       return res.status(400).send("Invalid row or column");
     }
 
-    const result = hitShip(gameState.board, row, col);
+    const result = hitShip(gameState, row, col);
 
     console.log(`Result: ${result}`);
     console.log("Updated game state after hit:", gameState);
@@ -56,6 +68,11 @@ app.post("/hit", (req, res) => {
     const responseData = {
       board: gameState.board,
       result,
+      remainingShots: gameState.remainingShots,
+      missedShots: gameState.missedShots,
+      gameWon: gameState.gameWon,
+      totalShipCells: gameState.totalShipCells,
+      sunkShipCells: gameState.sunkShipCells,
     };
 
     res.status(200).json(responseData);

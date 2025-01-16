@@ -5,8 +5,9 @@ const useGameLogic = () => {
   const [remainingHits, setRemainingHits] = useState(0);
   const [message, setMessage] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  const [sessionId, setSessionId] = useState(""); // Store sessionId
 
-  const startNewGame = async () => {
+  const handleNewGame = async () => {
     try {
       const response = await fetch("http://localhost:3001/newGame", {
         method: "POST",
@@ -18,9 +19,16 @@ const useGameLogic = () => {
       const data = await response.json();
 
       setBoard(data.board);
-      setRemainingHits(25);
+      setRemainingHits(data.remainingShots);
       setGameOver(false);
-      setMessage("New game started! You have 25 hits remaining.");
+      setSessionId(data.sessionId);
+      setMessage(
+        `New game started! You have ${data.remainingShots} hits remaining.`
+      );
+      let remainingShips = countShipCells(data.board);
+      console.log(`Current "ship" cells remaining: ${remainingShips}`);
+
+      console.table(data.board);
     } catch (error) {
       setMessage("Error starting a new game. Please try again.");
     }
@@ -41,7 +49,7 @@ const useGameLogic = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ row, col }),
+        body: JSON.stringify({ sessionId, row, col }),
       });
 
       if (!response.ok) {
@@ -53,6 +61,12 @@ const useGameLogic = () => {
       setBoard((prevBoard) => {
         const newBoard = [...prevBoard];
         newBoard[row][col] = data.result === "hit" ? "hit" : "miss";
+        console.log("Updated Board:", newBoard);
+
+        const remainingShips = countShipCells(newBoard);
+        console.log(
+          `Current "ship" cells remaining AFTER HUT: ${remainingShips}`
+        );
         return newBoard;
       });
 
@@ -68,12 +82,28 @@ const useGameLogic = () => {
           return updatedHits;
         });
       }
+
+      if (data.gameWon) {
+        setGameOver(true);
+        setMessage("You won! All ships are sunk!");
+      }
     } catch (error) {
       setMessage("Error hitting the cell. Please try again.");
     }
   };
 
-  return { board, remainingHits, message, startNewGame, handleHitCell };
+  const countShipCells = (board: string[][]): number => {
+    return board.flat().filter((cell) => cell === "ship").length;
+  };
+
+  return {
+    board,
+    remainingHits,
+    message,
+    gameOver,
+    handleNewGame,
+    handleHitCell,
+  };
 };
 
 export default useGameLogic;

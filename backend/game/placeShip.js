@@ -13,7 +13,7 @@ const placeShip = (board, shipSize) => {
         let canPlace = true;
 
         for (let i = 0; i < shipSize; i++) {
-          if (board[row][col + 1] === "ship") {
+          if (board[row][col + i] === "ship") {
             canPlace = false;
             break;
           }

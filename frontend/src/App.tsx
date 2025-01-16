@@ -4,12 +4,8 @@ import Board from "./Components/Board";
 import useGameLogic from "./Components/GameLogic";
 
 const App: React.FC = () => {
-  const { board, remainingHits, message, startNewGame, handleHitCell } =
+  const { board, remainingHits, message, handleNewGame, handleHitCell } =
     useGameLogic();
-
-  useEffect(() => {
-    startNewGame();
-  }, []);
 
   return (
     <div className="flex flex-col items-center bg-gradient-to-br from-blue-800 via-indigo-900 to-purple-800 min-h-screen p-4 sm:p-6">
@@ -27,7 +23,7 @@ const App: React.FC = () => {
       <Board board={board} onCellClick={handleHitCell} />
       <div className="mt-12">
         <button
-          onClick={startNewGame}
+          onClick={handleNewGame}
           className="px-8 py-3 sm:px-10 sm:py-4 text-white bg-gradient-to-r from-teal-500 to-teal-400 rounded-3xl text-lg sm:text-xl font-semibold shadow-md transition-all duration-300 ease-in-out hover:bg-teal-600 hover:shadow-xl hover:ring-4 hover:ring-teal-300 active:scale-95"
         >
           Start New Game
