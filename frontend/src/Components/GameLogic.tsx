@@ -25,20 +25,23 @@ const useGameLogic = () => {
       setMessage(
         `New game started! You have ${data.remainingShots} hits remaining.`
       );
-      let remainingShips = countShipCells(data.board);
-      console.log(`Current "ship" cells remaining: ${remainingShips}`);
 
       console.table(data.board);
+      console.log("Remainining shots", data.remainingShots);
+      console.log("initial shots", data.initialShots);
+      console.log("sunken ship cells", data.sunkShipCells);
+      console.log("total ship cells", data.totalShipCells);
     } catch (error) {
       setMessage("Error starting a new game. Please try again.");
     }
   };
 
   const handleHitCell = async (row: number, col: number) => {
-    if (remainingHits === 0) {
+    if (remainingHits === 0 || gameOver) {
       setMessage("Game over! Press the button to start a new game.");
       return;
     }
+
     if (board[row][col] === "hit" || board[row][col] === "miss") {
       return;
     }
@@ -46,9 +49,7 @@ const useGameLogic = () => {
     try {
       const response = await fetch("http://localhost:3001/hit", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, row, col }),
       });
 
@@ -61,12 +62,11 @@ const useGameLogic = () => {
       setBoard((prevBoard) => {
         const newBoard = [...prevBoard];
         newBoard[row][col] = data.result === "hit" ? "hit" : "miss";
-        console.log("Updated Board:", newBoard);
-
-        const remainingShips = countShipCells(newBoard);
-        console.log(
-          `Current "ship" cells remaining AFTER HUT: ${remainingShips}`
-        );
+        console.table(newBoard);
+        console.log("Remainining shots", data.remainingShots);
+        console.log("initial shots", data.initialShots);
+        console.log("sunken ship cells", data.sunkShipCells);
+        console.log("total ship cells", data.totalShipCells);
         return newBoard;
       });
 
@@ -85,14 +85,13 @@ const useGameLogic = () => {
 
       if (data.gameWon) {
         setGameOver(true);
-        if (data.totalShipCells === data.sunkShipCells) {
-          if (data.remainingShots === data.initialShots) {
-            setMessage("You won! All ships sunk without wasting any shots.");
-          } else {
-            setMessage("You lost! All ships sunk, but you wasted some shots.");
-          }
-        }
-        if (gameOver) {
+        if (data.sunkShipCells === data.totalShipCells) {
+          setMessage(
+            data.remainingShots === data.initialShots
+              ? "You won! All ships sunk without wasting any shots."
+              : "You lost! All ships sunk, but you wasted some shots."
+          );
+        } else {
           setMessage(
             "You lost! You didn't sink all ships, and you're out of shots."
           );
@@ -101,10 +100,6 @@ const useGameLogic = () => {
     } catch (error) {
       setMessage("Error hitting the cell. Please try again.");
     }
-  };
-
-  const countShipCells = (board: string[][]): number => {
-    return board.flat().filter((cell) => cell === "ship").length;
   };
 
   return {

@@ -13,8 +13,8 @@ const startNewGame = () => {
 
   return {
     board,
-    remainingShots: initialShots,
     initialShots: 25,
+    remainingShots: 25,
     missedShots: 0,
     totalShipCells,
     sunkShipCells: 0,

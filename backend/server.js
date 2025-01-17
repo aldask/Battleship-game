@@ -20,11 +20,12 @@ app.post("/newGame", (req, res) => {
 
     const responseData = {
       board: gameState.board,
+      initialShots: gameState.initialShots,
       remainingShots: gameState.remainingShots,
       missedShots: gameState.missedShots,
-      gameWon: gameState.gameWon,
       totalShipCells: gameState.totalShipCells,
       sunkShipCells: gameState.sunkShipCells,
+      gameWon: gameState.gameWon,
       sessionId: sessionId,
     };
 
@@ -68,11 +69,12 @@ app.post("/hit", (req, res) => {
     const responseData = {
       board: gameState.board,
       result,
+      initialShots: gameState.initialShots,
       remainingShots: gameState.remainingShots,
       missedShots: gameState.missedShots,
-      gameWon: gameState.gameWon,
       totalShipCells: gameState.totalShipCells,
       sunkShipCells: gameState.sunkShipCells,
+      gameWon: gameState.gameWon,
     };
 
     res.status(200).json(responseData);
