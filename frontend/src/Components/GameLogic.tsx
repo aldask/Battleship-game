@@ -5,9 +5,10 @@ const useGameLogic = () => {
   const [remainingHits, setRemainingHits] = useState(0);
   const [message, setMessage] = useState("");
   const [gameOver, setGameOver] = useState(false);
-  const [sessionId, setSessionId] = useState(""); // Store sessionId
+  const [sessionId, setSessionId] = useState("");
 
   const handleNewGame = async () => {
+    console.log("pressing new game button");
     try {
       const response = await fetch("http://localhost:3001/newGame", {
         method: "POST",
@@ -27,22 +28,18 @@ const useGameLogic = () => {
       );
 
       console.table(data.board);
-      console.log("Remainining shots", data.remainingShots);
-      console.log("initial shots", data.initialShots);
-      console.log("sunken ship cells", data.sunkShipCells);
-      console.log("total ship cells", data.totalShipCells);
     } catch (error) {
       setMessage("Error starting a new game. Please try again.");
     }
   };
 
   const handleHitCell = async (row: number, col: number) => {
-    if (remainingHits === 0 || gameOver) {
-      setMessage("Game over! Press the button to start a new game.");
-      return;
-    }
-
-    if (board[row][col] === "hit" || board[row][col] === "miss") {
+    if (
+      remainingHits === 0 ||
+      gameOver ||
+      board[row][col] === "hit" ||
+      board[row][col] === "miss"
+    ) {
       return;
     }
 
@@ -63,10 +60,6 @@ const useGameLogic = () => {
         const newBoard = [...prevBoard];
         newBoard[row][col] = data.result === "hit" ? "hit" : "miss";
         console.table(newBoard);
-        console.log("Remainining shots", data.remainingShots);
-        console.log("initial shots", data.initialShots);
-        console.log("sunken ship cells", data.sunkShipCells);
-        console.log("total ship cells", data.totalShipCells);
         return newBoard;
       });
 
@@ -77,7 +70,9 @@ const useGameLogic = () => {
           const updatedHits = prevHits - 1;
           if (updatedHits === 0) {
             setGameOver(true);
-            setMessage("Game over! Press the button to start a new game.");
+            setMessage(
+              "You lost! You didn't sink all ships and you're out of shots."
+            );
           }
           return updatedHits;
         });
@@ -85,16 +80,16 @@ const useGameLogic = () => {
 
       if (data.gameWon) {
         setGameOver(true);
-        if (data.sunkShipCells === data.totalShipCells) {
-          setMessage(
-            data.remainingShots === data.initialShots
-              ? "You won! All ships sunk without wasting any shots."
-              : "You lost! All ships sunk, but you wasted some shots."
-          );
-        } else {
-          setMessage(
-            "You lost! You didn't sink all ships, and you're out of shots."
-          );
+        if (
+          data.sunkShipCells === data.totalShipCells &&
+          data.remainingShots === data.initialShots
+        ) {
+          setMessage("You won! All ships sunk without wasting any shots.");
+        } else if (
+          data.sunkShipCells === data.totalShipCells &&
+          data.remainingShots > 0
+        ) {
+          setMessage("You lost! All ships sunk and some shots remaining.");
         }
       }
     } catch (error) {

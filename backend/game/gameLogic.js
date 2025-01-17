@@ -40,15 +40,22 @@ const hitShip = (gameState, row, col) => {
 };
 
 const checkIfGameWon = (gameState) => {
-  if (gameState.sunkShipCells === gameState.totalShipCells) {
-    if (gameState.remainingShots === gameState.initialShots) {
-      gameState.gameWon = true;
-      console.log("You won! All ships sunk without wasting any shots.");
-    } else if (gameState.remainingShots < gameState.initialShots) {
-      gameState.gameWon = false;
-      console.log("You lost! You sunk all ships but wasted some shots.");
-    }
-  } else if (gameState.remainingShots === 0) {
+  if (
+    gameState.sunkShipCells === gameState.totalShipCells &&
+    gameState.remainingShots === gameState.initialShots
+  ) {
+    gameState.gameWon = true;
+    console.log("You won! All ships sunk without wasting any shots.");
+  } else if (
+    gameState.sunkShipCells === gameState.totalShipCells &&
+    gameState.remainingShots > 0
+  ) {
+    gameState.gameWon = true;
+    console.log("You won! All ships sunk and some shots remaining.");
+  } else if (
+    gameState.remainingShots === 0 &&
+    gameState.sunkShipCells !== gameState.totalShipCells
+  ) {
     gameState.gameWon = false;
     console.log("Game over! You didn't sink all ships and have no shots left.");
   }
