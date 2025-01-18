@@ -7,9 +7,9 @@ const App: React.FC = () => {
   const { board, remainingHits, message, handleNewGame, handleHitCell } =
     useGameLogic();
 
-  // useEffect(() => {
-  //   handleNewGame();
-  // }, []);
+  useEffect(() => {
+    handleNewGame();
+  }, []);
 
   return (
     <div className="flex flex-col items-center bg-gradient-to-br from-blue-800 via-indigo-900 to-purple-800 min-h-screen p-4 sm:p-6">
