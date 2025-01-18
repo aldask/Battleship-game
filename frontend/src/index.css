@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.animate__fadeIn {
+  animation-duration: 2s;
+}
+
+@keyframes burn-effect {
+  0% {
+    color: #ffbf00;
+    transform: scale(1);
+  }
+  50% {
+    color: #ffffff;
+    transform: scale(1.05);
+  }
+  100% {
+    color: #ffbf00;
+    transform: scale(1);
+  }
+}
+
+.animate-burn {
+  animation: burn-effect 1s ease-in-out infinite;
+}
