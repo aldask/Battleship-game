@@ -5,8 +5,10 @@ const useGameLogic = () => {
   const [remainingHits, setRemainingHits] = useState(0);
   const [message, setMessage] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  const [sessionId, setSessionId] = useState("");
 
-  const startNewGame = async () => {
+  const handleNewGame = async () => {
+    console.log("pressing new game button");
     try {
       const response = await fetch("http://localhost:3001/newGame", {
         method: "POST",
@@ -18,30 +20,34 @@ const useGameLogic = () => {
       const data = await response.json();
 
       setBoard(data.board);
-      setRemainingHits(25);
+      setRemainingHits(data.remainingShots);
       setGameOver(false);
-      setMessage("New game started! You have 25 hits remaining.");
+      setSessionId(data.sessionId);
+      setMessage(
+        `New game started! You have ${data.remainingShots} hits remaining.`
+      );
+
+      console.table(data.board);
     } catch (error) {
       setMessage("Error starting a new game. Please try again.");
     }
   };
 
   const handleHitCell = async (row: number, col: number) => {
-    if (remainingHits === 0) {
-      setMessage("Game over! Press the button to start a new game.");
-      return;
-    }
-    if (board[row][col] === "hit" || board[row][col] === "miss") {
+    if (
+      remainingHits === 0 ||
+      gameOver ||
+      board[row][col] === "hit" ||
+      board[row][col] === "miss"
+    ) {
       return;
     }
 
     try {
       const response = await fetch("http://localhost:3001/hit", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ row, col }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, row, col }),
       });
 
       if (!response.ok) {
@@ -53,6 +59,7 @@ const useGameLogic = () => {
       setBoard((prevBoard) => {
         const newBoard = [...prevBoard];
         newBoard[row][col] = data.result === "hit" ? "hit" : "miss";
+        console.table(newBoard);
         return newBoard;
       });
 
@@ -61,19 +68,43 @@ const useGameLogic = () => {
       if (data.result === "miss") {
         setRemainingHits((prevHits) => {
           const updatedHits = prevHits - 1;
-          if (updatedHits <= 0) {
+          if (updatedHits === 0) {
             setGameOver(true);
-            setMessage("Game over! Please start a new game.");
+            setMessage(
+              "You lost! You didn't sink all ships and you're out of shots."
+            );
           }
           return updatedHits;
         });
+      }
+
+      if (data.gameWon) {
+        setGameOver(true);
+        if (
+          data.sunkShipCells === data.totalShipCells &&
+          data.remainingShots === data.initialShots
+        ) {
+          setMessage("You won! All ships sunk without wasting any shots.");
+        } else if (
+          data.sunkShipCells === data.totalShipCells &&
+          data.remainingShots > 0
+        ) {
+          setMessage("You lost! All ships sunk and some shots remaining.");
+        }
       }
     } catch (error) {
       setMessage("Error hitting the cell. Please try again.");
     }
   };
 
-  return { board, remainingHits, message, startNewGame, handleHitCell };
+  return {
+    board,
+    remainingHits,
+    message,
+    gameOver,
+    handleNewGame,
+    handleHitCell,
+  };
 };
 
 export default useGameLogic;

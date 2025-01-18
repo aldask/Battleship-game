@@ -1,47 +1,57 @@
-// Ship placement
+const isCellOccupied = (board, row, col) => {
+  for (let rowOffset = -1; rowOffset <= 1; rowOffset++) {
+    for (let colOffset = -1; colOffset <= 1; colOffset++) {
+      const checkRow = row + rowOffset;
+      const checkCol = col + colOffset;
+
+      if (
+        checkRow >= 0 &&
+        checkRow < 10 &&
+        checkCol >= 0 &&
+        checkCol < 10 &&
+        board[checkRow][checkCol] === "ship"
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 const placeShip = (board, shipSize) => {
-  let placed = false;
+  while (true) {
+    const isHorizontal = Math.random() < 0.5;
+    const startRow = Math.floor(Math.random() * 10);
+    const startCol = Math.floor(Math.random() * 10);
 
-  while (!placed) {
-    const horizontal = Math.random() < 0.5;
+    const fitsOnBoard = isHorizontal
+      ? startCol + shipSize <= 10
+      : startRow + shipSize <= 10;
 
-    const row = Math.floor(Math.random() * 10);
-    const col = Math.floor(Math.random() * 10);
+    if (!fitsOnBoard) {
+      continue;
+    }
 
-    if (!horizontal) {
-      if (col + shipSize <= 10) {
-        let canPlace = true;
+    let canPlace = true;
 
-        for (let i = 0; i < shipSize; i++) {
-          if (board[row][col + 1] === "ship") {
-            canPlace = false;
-            break;
-          }
-        }
-        if (canPlace) {
-          for (let i = 0; i < shipSize; i++) {
-            board[row][col + i] = "ship";
-          }
-          placed = true;
-        }
+    for (let i = 0; i < shipSize; i++) {
+      const row = isHorizontal ? startRow : startRow + i;
+      const col = isHorizontal ? startCol + i : startCol;
+
+      if (isCellOccupied(board, row, col)) {
+        canPlace = false;
+        break;
       }
-    } else {
-      if (row + shipSize <= 10) {
-        let canPlace = true;
+    }
 
-        for (let i = 0; i < shipSize; i++) {
-          if (board[row + i][col] === "ship") {
-            canPlace = false;
-            break;
-          }
-        }
-        if (canPlace) {
-          for (let i = 0; i < shipSize; i++) {
-            board[row + i][col] = "ship";
-          }
-          placed = true;
-        }
+    if (canPlace) {
+      for (let i = 0; i < shipSize; i++) {
+        const row = isHorizontal ? startRow : startRow + i;
+        const col = isHorizontal ? startCol + i : startCol;
+
+        board[row][col] = "ship";
       }
+      break;
     }
   }
 };
