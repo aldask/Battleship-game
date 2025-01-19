@@ -29,7 +29,7 @@ cd Battleship-game
    ```bash
    node server.js
    ```
-   or if you prefer Nodemon
+   or if you prefer Nodemon:
    ```bash
    nodemon server.js
    ```
