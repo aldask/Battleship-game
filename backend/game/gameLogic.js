@@ -51,13 +51,15 @@ const checkIfGameWon = (gameState) => {
     gameState.remainingShots > 0
   ) {
     gameState.gameWon = true;
-    console.log("You won! All ships sunk and some shots remaining.");
+    console.log("You won! All ships are sunk with shots to spare.");
   } else if (
     gameState.remainingShots === 0 &&
     gameState.sunkShipCells !== gameState.totalShipCells
   ) {
     gameState.gameWon = false;
-    console.log("Game over! You didn't sink all ships and have no shots left.");
+    console.log(
+      "You lost! Not all the ships were sunk, and you’re out of shots."
+    );
   }
 };
 
