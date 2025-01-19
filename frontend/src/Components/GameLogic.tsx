@@ -71,7 +71,7 @@ const useGameLogic = () => {
           if (updatedHits === 0) {
             setGameOver(true);
             setMessage(
-              "You lost! You didn't sink all ships and you're out of shots."
+              "You lost! Not all the ships were sunk, and you’re out of shots."
             );
           }
           return updatedHits;
@@ -89,7 +89,7 @@ const useGameLogic = () => {
           data.sunkShipCells === data.totalShipCells &&
           data.remainingShots > 0
         ) {
-          setMessage("You lost! All ships sunk and some shots remaining.");
+          setMessage("You won! All ships are sunk with shots to spare.");
         }
       }
     } catch (error) {
