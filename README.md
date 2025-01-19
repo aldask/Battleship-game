@@ -11,8 +11,8 @@ A simple Battleship game built with React (frontend) and Node.js (backend).
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository_url>
-cd <repository_folder>
+git clone https://github.com/aldask/Battleship-game.git
+cd Battleship-game
 ```
 
 ### 2. Start the Backend
